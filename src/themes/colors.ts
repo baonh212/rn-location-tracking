@@ -8,6 +8,7 @@ const colors = {
   success: '#23C16B',
   warning: '#FFB323',
   info: '#48A7F8',
+  blackOpacity: 'rgba(0,0,0,0.4)',
 } as const;
 
 const getColorOpacity = (color: string, opacity: number): string => {
