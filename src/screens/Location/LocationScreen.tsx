@@ -1,99 +1,69 @@
-import React, {useCallback, useEffect, useState} from 'react';
-import {Animated, FlatList, StyleSheet, Text, View} from 'react-native';
-import {colors, metrics} from '../../themes';
-import Swipeable from 'react-native-gesture-handler/Swipeable';
-import {RectButton} from 'react-native-gesture-handler';
+import React, {useCallback, useEffect, useRef, useState} from 'react';
+import {FlatList, StyleSheet, View} from 'react-native';
 import * as Location from 'expo-location';
-import {LocationObject} from 'expo-location';
-
-type AnimatedInterpolation = ReturnType<Animated.Value['interpolate']>;
+import {useLocationStore, UserLocation} from '../../store';
+import * as Crypto from 'expo-crypto';
+import {getCurrentPosition} from './utils.ts';
+import {LocationItem} from './components/LocationItem.tsx';
+import {showToast} from '../../components';
 
 export const LocationScreen = () => {
-  const abc = [1, 2, 3, 4];
-  const [location, setLocation] = useState<LocationObject | null>(null);
-  const [errorMsg, setErrorMsg] = useState<string | null>(null);
+  const flatListRef = useRef<FlatList>(null);
 
-  useEffect(() => {
-    (async () => {
-      let {status} = await Location.requestForegroundPermissionsAsync();
-      if (status !== 'granted') {
-        setErrorMsg('Permission to access location was denied');
-        return;
-      }
+  const locations = useLocationStore(state => state.locations);
+  const addLocation = useLocationStore(state => state.addLocation);
 
-      let location = await Location.getCurrentPositionAsync({});
-      setLocation(location);
-    })();
-  }, []);
-
-  console.log(location);
-
-  const renderRightActions = (
-    progress: AnimatedInterpolation,
-    dragX: AnimatedInterpolation,
-  ) => {
-    const trans = dragX.interpolate({
-      inputRange: [-80, 0],
-      outputRange: [1, 0],
-      extrapolate: 'clamp',
+  const fetchAndAddLocation = async () => {
+    let location = await getCurrentPosition();
+    addLocation({
+      ...location.coords,
+      timestamp: location.timestamp,
+      id: Crypto.randomUUID(),
     });
-
-    const trans2 = dragX.interpolate({
-      inputRange: [-160, 0],
-      outputRange: [0, 1],
-      extrapolate: 'clamp',
-    });
-    return (
-      <>
-        <RectButton
-          style={{
-            backgroundColor: colors.red,
-            paddingHorizontal: metrics.xs,
-            justifyContent: 'center',
-          }}
-          onPress={() => {}}>
-          <Animated.Text
-            style={[
-              {
-                transform: [{translateX: trans2}],
-              },
-            ]}>
-            Delete
-          </Animated.Text>
-        </RectButton>
-        <RectButton
-          style={{
-            backgroundColor: 'gray',
-            justifyContent: 'center',
-            paddingHorizontal: metrics.xs,
-          }}>
-          <Text>Edit</Text>
-        </RectButton>
-      </>
-    );
   };
 
-  const renderItem = useCallback(({item}: {item: any}) => {
-    return (
-      <Swipeable
-        childrenContainerStyle={{
-          backgroundColor: 'blue',
-          height: 50,
-        }}
-        containerStyle={{
-          marginBottom: 20,
-        }}
-        renderRightActions={renderRightActions}>
-        <Text>{item}</Text>
-      </Swipeable>
-    );
+  useEffect(() => {
+    let intervalId: NodeJS.Timeout;
+
+    const getLocation = async () => {
+      let {status} = await Location.requestForegroundPermissionsAsync();
+      if (status !== 'granted') {
+        showToast({
+          type: 'ERROR',
+          message: 'Permission to access location was denied',
+        });
+        return;
+      }
+      await fetchAndAddLocation();
+
+      intervalId = setInterval(fetchAndAddLocation, 8000); // Collect location every 8 seconds
+    };
+
+    getLocation().then();
+
+    return () => {
+      if (intervalId) clearInterval(intervalId); // Clear interval on unmount
+    };
   }, []);
+
+  useEffect(() => {
+    // Scroll to the bottom when the data changes
+    if (flatListRef.current) {
+      flatListRef.current.scrollToEnd({animated: true});
+    }
+  }, [locations]); // Trigger the effect whenever the data changes
+
+  const renderItem = useCallback(({item}: {item: UserLocation}) => {
+    return <LocationItem item={item} />;
+  }, []);
+
   return (
     <View style={styles.container}>
-      <FlatList
-        data={abc}
+      <FlatList<UserLocation>
+        ref={flatListRef}
+        data={locations}
         renderItem={renderItem}
-        keyExtractor={(item, index) => index.toString()}
+        keyExtractor={(item, index) => item.id}
       />
     </View>
   );
