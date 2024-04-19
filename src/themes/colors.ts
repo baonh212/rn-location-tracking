@@ -1,5 +1,5 @@
 const colors = {
-  primary: '#65c8c6',
+  primary: '#48A7F8',
   black: '#1F1F1F',
   white: '#ffffff',
   gray: '#454545',
@@ -7,8 +7,9 @@ const colors = {
   error: '#FF5247',
   success: '#23C16B',
   warning: '#FFB323',
-  info: '#48A7F8',
   blackOpacity: 'rgba(0,0,0,0.4)',
+  lightGray: '#adadad',
+  background: '#F6F7FA',
 } as const;
 
 const getColorOpacity = (color: string, opacity: number): string => {

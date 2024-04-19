@@ -79,6 +79,11 @@ export const LocationItem = memo(function LocationItem({
       <Text>{item.id}</Text>
       <Text>latitude: {item.latitude}</Text>
       <Text>longitude: {item.longitude}</Text>
+      <Text>accuracy: {item.accuracy}</Text>
+      <Text>altitudeAccuracy: {item.altitudeAccuracy}</Text>
+      <Text>speed: {item.speed}</Text>
+      <Text>heading: {item.heading}</Text>
+      <Text>altitude: {item.altitude}</Text>
     </Swipeable>
   );
 });
