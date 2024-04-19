@@ -1,6 +1,8 @@
-const RouteKey = {
-  Location: 'Location',
-  Settings: 'Settings',
-} as const;
-
-export {RouteKey};
+export enum RouteKey {
+  // Location
+  LocationStack = 'LocationStack',
+  Location = 'Location',
+  LocationDetails = 'LocationDetails',
+  // Settings
+  Settings = 'Settings',
+}

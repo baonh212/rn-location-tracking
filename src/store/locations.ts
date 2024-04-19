@@ -9,6 +9,7 @@ type UserLocation = {
 type LocationsState = {
   locations: UserLocation[];
   addLocation: (location: UserLocation) => void;
+  updateLocation: (id: string, userLocation: UserLocation) => void;
   deleteLocation: (id: string) => void;
   locationLastIndex: number;
 };
@@ -23,6 +24,15 @@ const useLocationStore = create<LocationsState>(set => ({
     })),
   deleteLocation: id =>
     set(state => ({locations: state.locations.filter(l => l.id !== id)})),
+  updateLocation: (id, userLocation) =>
+    set(state => {
+      const lookupIndex = state.locations.findIndex(l => l.id === id);
+      const nextLocations = JSON.parse(JSON.stringify(state.locations));
+      nextLocations[lookupIndex] = userLocation;
+      return {
+        locations: nextLocations,
+      };
+    }),
 }));
 
 export {useLocationStore};

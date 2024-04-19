@@ -16,6 +16,7 @@ let notMovingTimeout: NodeJS.Timeout;
 
 export const UPDATE_LOCATION_TASK = 'UPDATE_LOCATION_TASK';
 const NOT_MOVING_TIME = 10 * 60 * 1000; //10 minutes
+const NOT_MOVING_DISTANCE = 10; // 10 meters
 
 type TaskLocationResponse = {
   data: {
@@ -70,15 +71,16 @@ TaskManager.defineTask(
             timestamp: locations[0].timestamp,
             id: Crypto.randomUUID(),
           });
-
-          clearTimeout(notMovingTimeout); // Reset the timer
-          if (enabledNotifications) {
-            notMovingTimeout = setTimeout(async () => {
-              await displayNotification(
-                `You aren't moving`,
-                'Tap here to stop tracking location',
-              );
-            }, NOT_MOVING_TIME);
+          if (distance <= NOT_MOVING_DISTANCE) {
+            clearTimeout(notMovingTimeout); // Reset the timer
+            if (enabledNotifications) {
+              notMovingTimeout = setTimeout(async () => {
+                await displayNotification(
+                  `You aren't moving`,
+                  'Tap here to stop tracking location',
+                );
+              }, NOT_MOVING_TIME);
+            }
           }
           // 🔧 Adjust the accumulated time for any excess beyond 60 seconds.
           accumulatedTime -= +locationFrequency;

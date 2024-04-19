@@ -9,6 +9,9 @@ import {UPDATE_LOCATION_TASK, useLocationTracking} from '../../hooks';
 import {requestNotificationPermissions} from '../../services/notifee.ts';
 import {useSettingStore} from '../../store/settings.ts';
 import {colors} from '../../themes';
+import {RouteKey} from '../../navigation/RouteKey.ts';
+import {StackScreenProps} from '@react-navigation/stack';
+import {AppStackParamList} from '../../navigation/types.ts';
 
 notifee.onBackgroundEvent(async ({type, detail}) => {
   if (type === EventType.PRESS) {
@@ -22,7 +25,12 @@ notifee.onBackgroundEvent(async ({type, detail}) => {
   }
 });
 
-export const LocationScreen = () => {
+type LocationScreenProps = StackScreenProps<
+  AppStackParamList,
+  RouteKey.Location
+>;
+
+export const LocationScreen: React.FC<LocationScreenProps> = ({navigation}) => {
   const flatListRef = useRef<FlatList>(null);
 
   const locations = useLocationStore(state => state.locations);
@@ -31,6 +39,12 @@ export const LocationScreen = () => {
   );
 
   useLocationTracking();
+
+  const handleOnLocationPress = useCallback((location: UserLocation) => {
+    navigation.navigate(RouteKey.LocationDetails, {
+      location,
+    });
+  }, []);
 
   useEffect(() => {
     requestNotificationPermissions().then(permissions => {
@@ -60,7 +74,7 @@ export const LocationScreen = () => {
   }, [locations]); // Trigger the effect whenever the data changes
 
   const renderItem = useCallback(({item}: {item: UserLocation}) => {
-    return <LocationItem item={item} />;
+    return <LocationItem onLocationPress={handleOnLocationPress} item={item} />;
   }, []);
 
   return (

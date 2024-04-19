@@ -1144,6 +1144,8 @@ PODS:
     - glog
     - RCT-Folly (= 2022.05.16.00)
     - React-Core
+  - RNShare (10.1.0):
+    - React-Core
   - SocketRocket (0.6.1)
   - UMAppLoader (4.5.1)
   - Yoga (1.14.0)
@@ -1231,6 +1233,7 @@ DEPENDENCIES:
   - RNGestureHandler (from `../node_modules/react-native-gesture-handler`)
   - "RNNotifee (from `../node_modules/@notifee/react-native`)"
   - RNScreens (from `../node_modules/react-native-screens`)
+  - RNShare (from `../node_modules/react-native-share`)
   - UMAppLoader (from `../node_modules/unimodules-app-loader/ios`)
   - Yoga (from `../node_modules/react-native/ReactCommon/yoga`)
 
@@ -1366,6 +1369,8 @@ EXTERNAL SOURCES:
     :path: "../node_modules/@notifee/react-native"
   RNScreens:
     :path: "../node_modules/react-native-screens"
+  RNShare:
+    :path: "../node_modules/react-native-share"
   UMAppLoader:
     :path: "../node_modules/unimodules-app-loader/ios"
   Yoga:
@@ -1441,6 +1446,7 @@ SPEC CHECKSUMS:
   RNGestureHandler: bc2cdb2dc42facdf34992ae364b8a728e19a3686
   RNNotifee: 8e2d3df3f0e9ce8f5d1fe4c967431138190b6175
   RNScreens: b6b64d956af3715adbfe84808694ae82d3fec74f
+  RNShare: b674d9f1cb0dc11116983bebd8712908a226a3ee
   SocketRocket: f32cd54efbe0f095c4d7594881e52619cfe80b17
   UMAppLoader: 79d3ee6aa2447a1fe2e8b0d07acf2de106e55b58
   Yoga: d17d2cc8105eed528474683b42e2ea310e1daf61

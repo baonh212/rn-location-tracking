@@ -1,5 +1,5 @@
 import React, {memo, useCallback} from 'react';
-import {Animated, StyleSheet, Text} from 'react-native';
+import {Animated, StyleSheet, Text, TouchableOpacity} from 'react-native';
 import Swipeable from 'react-native-gesture-handler/Swipeable';
 import {useLocationStore, UserLocation} from '../../../store';
 import {RectButton} from 'react-native-gesture-handler';
@@ -9,10 +9,12 @@ type AnimatedInterpolation = ReturnType<Animated.Value['interpolate']>;
 
 type LocationItemProps = {
   item: UserLocation;
+  onLocationPress: (item: UserLocation) => void;
 };
 
 export const LocationItem = memo(function LocationItem({
   item,
+  onLocationPress,
 }: LocationItemProps) {
   const deleteLocation = useLocationStore(state => state.deleteLocation);
 
@@ -22,16 +24,9 @@ export const LocationItem = memo(function LocationItem({
       dragX: AnimatedInterpolation,
       location: UserLocation,
     ) => {
-      const editTrans = dragX.interpolate({
-        inputRange: [-80, 0],
-        outputRange: [1, 0],
-        extrapolate: 'clamp',
-      });
-
       const deleteTrans = dragX.interpolate({
-        inputRange: [-160, 0],
+        inputRange: [-80, 0],
         outputRange: [0, 1],
-        extrapolate: 'clamp',
       });
       return (
         <>
@@ -47,16 +42,6 @@ export const LocationItem = memo(function LocationItem({
                 },
               ]}>
               Delete
-            </Animated.Text>
-          </RectButton>
-          <RectButton style={styles.swipeButton}>
-            <Animated.Text
-              style={[
-                {
-                  transform: [{translateX: editTrans}],
-                },
-              ]}>
-              Edit
             </Animated.Text>
           </RectButton>
         </>
@@ -76,14 +61,19 @@ export const LocationItem = memo(function LocationItem({
           item,
         );
       }}>
-      <Text>{item.id}</Text>
-      <Text>latitude: {item.latitude}</Text>
-      <Text>longitude: {item.longitude}</Text>
-      <Text>accuracy: {item.accuracy}</Text>
-      <Text>altitudeAccuracy: {item.altitudeAccuracy}</Text>
-      <Text>speed: {item.speed}</Text>
-      <Text>heading: {item.heading}</Text>
-      <Text>altitude: {item.altitude}</Text>
+      <TouchableOpacity
+        onPress={() => {
+          onLocationPress(item);
+        }}>
+        <Text>{item.id}</Text>
+        <Text>latitude: {item.latitude}</Text>
+        <Text>longitude: {item.longitude}</Text>
+        <Text>accuracy: {item.accuracy}</Text>
+        <Text>altitudeAccuracy: {item.altitudeAccuracy}</Text>
+        <Text>speed: {item.speed}</Text>
+        <Text>heading: {item.heading}</Text>
+        <Text>altitude: {item.altitude}</Text>
+      </TouchableOpacity>
     </Swipeable>
   );
 });
